@@ -21,20 +21,41 @@ namespace BogrenDigital
             comparer.setDisplayedComponent (leftEditor.get(), true);
             comparer.setDisplayedComponent (rightEditor.get(), false);
 
-            const auto minWidth = 500;
-            const auto minHeight = std::ceil (minWidth * getAspectRatio());
-            const auto maxWidth = minWidth * 2.39f;
-            const auto maxHeight = std::ceil (maxWidth * getAspectRatio());
-            const auto editors = std::array<juce::AudioProcessorEditor*, 3> { this, leftEditor.get(), rightEditor.get() };
-            for (auto* editor : editors)
-            {
-                editor->setSize (minWidth, static_cast<int> (minHeight));
-                editor->setResizeLimits (minWidth, static_cast<int> (minHeight), static_cast<int> (maxWidth), static_cast<int> (maxHeight));
-                editor->setResizable (true, true);
-            }
+            setEditorConstraints();
         }
 
-        float getAspectRatio() const { return 0.7131687243f; }
+        void setAspectRatio (float newAspectRatio)
+        {
+            if (aspectRatio != newAspectRatio)
+            {
+                aspectRatio = newAspectRatio;
+                setEditorConstraints();
+                resized();
+            }
+        }
+        float getAspectRatio() const { return aspectRatio; }
+
+        void setMinWidth (float newMinWidth)
+        {
+            if (minWidth != newMinWidth)
+            {
+                minWidth = newMinWidth;
+                setEditorConstraints();
+                resized();
+            }
+        }
+        float getMinWidth() const { return minWidth; }
+        
+        void setMaxWidthMultiplier (float newMaxWidthMultiplier)
+        {
+            if (maxWidthMultiplier != newMaxWidthMultiplier)
+            {
+                maxWidthMultiplier = newMaxWidthMultiplier;
+                setEditorConstraints();
+                resized();
+            }
+        }
+        float getMaxWidthMultiplier() const { return maxWidthMultiplier; }
 
         void resized() override
         {
@@ -53,6 +74,24 @@ namespace BogrenDigital
     private:
         std::unique_ptr<juce::AudioProcessorEditor> leftEditor, rightEditor;
         SplitView comparer;
+        float aspectRatio = 0.7131687243f;
+        float minWidth = 500.0f;
+        float maxWidthMultiplier = 2.39f;
+
+        void setEditorConstraints()
+        {
+            const auto minWidth = getMinWidth();
+            const auto minHeight = std::ceil (minWidth * getAspectRatio());
+            const auto maxWidth = minWidth * getMaxWidthMultiplier();
+            const auto maxHeight = std::ceil (maxWidth * getAspectRatio());
+            const auto editors = std::array<juce::AudioProcessorEditor*, 3> { this, leftEditor.get(), rightEditor.get() };
+            for (auto* editor : editors)
+            {
+                editor->setSize (minWidth, static_cast<int> (minHeight));
+                editor->setResizeLimits (minWidth, static_cast<int> (minHeight), static_cast<int> (maxWidth), static_cast<int> (maxHeight));
+                editor->setResizable (true, true);
+            }
+        }
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EditorComparer)
     };
