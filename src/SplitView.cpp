@@ -38,7 +38,8 @@ namespace BogrenDigital
 
     void SplitView::DividerComponent::paint (juce::Graphics& g)
     {
-        g.setColour (juce::Colours::white.withAlpha (0.5f));
+        auto colour = (currentStyle == Style::Light) ? juce::Colours::white : juce::Colours::black;
+        g.setColour (colour.withAlpha (0.5f));
         g.fillAll();
     }
 
@@ -54,6 +55,11 @@ namespace BogrenDigital
             auto xPos = e.getEventRelativeTo (&owner).position.x;
             owner.setDividerPosition (xPos);
         }
+    }
+
+    void SplitView::DividerComponent::setStyle (Style style)
+    {
+        currentStyle = style;
     }
 
     SplitView::SplitView()
@@ -134,6 +140,20 @@ namespace BogrenDigital
                 showBothButton.setButtonText (text);
                 break;
         }
+    }
+
+    void SplitView::setButtonStyle (Style style)
+    {
+        radioButtonLookAndFeel.setStyle (style);
+        showLeftButton.repaint();
+        showRightButton.repaint();
+        showBothButton.repaint();
+    }
+
+    void SplitView::setDividerStyle (Style style)
+    {
+        divider.setStyle (style);
+        divider.repaint();
     }
 
     void SplitView::setDisplayedComponent (juce::Component* component, bool isLeft)

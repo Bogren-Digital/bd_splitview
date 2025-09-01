@@ -46,6 +46,27 @@ namespace BogrenDigital
          */
         void setButtonText (ViewMode mode, const juce::String& text);
 
+        /**
+         * @brief Enum class that defines the available visual styles.
+         */
+        enum class Style { Light, Dark };
+
+        /**
+         * @brief Sets the visual style for the buttons.
+         * @param style The style to apply to the buttons (Light or Dark).
+         * @details Light style uses white text/elements, Dark style uses black text/elements.
+         *          Default is Light style.
+         */
+        void setButtonStyle (Style style);
+
+        /**
+         * @brief Sets the visual style for the divider.
+         * @param style The style to apply to the divider (Light or Dark).
+         * @details Light style uses white divider, Dark style uses black divider.
+         *          Default is Light style.
+         */
+        void setDividerStyle (Style style);
+
     private:
         class DividerComponent : public juce::Component
         {
@@ -55,11 +76,14 @@ namespace BogrenDigital
             void mouseDown (const juce::MouseEvent& e) override;
             void mouseDrag (const juce::MouseEvent& e) override;
 
+            void setStyle (Style style);
+
             static constexpr float width = 4.0f;
 
         private:
             SplitView& owner;
             bool isDragging = false;
+            Style currentStyle = Style::Light;
 
             JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DividerComponent)
         };
@@ -67,29 +91,42 @@ namespace BogrenDigital
         class RadioButtonLookAndFeel : public juce::LookAndFeel_V4
         {
         public:
+            void setStyle (Style style) 
+            { 
+                currentStyle = style; 
+            }
+
             void drawToggleButton (juce::Graphics& g, juce::ToggleButton& button, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
             {
                 auto bounds = button.getLocalBounds().toFloat();
                 auto cornerSize = bounds.getHeight() * 0.2f;
 
+                auto baseColour = (currentStyle == Style::Light) ? juce::Colours::white : juce::Colours::black;
+
                 if (button.getToggleState())
                 {
-                    g.setColour (juce::Colours::white.withAlpha (0.2f));
+                    g.setColour (baseColour.withAlpha (0.2f));
                     g.fillRoundedRectangle (bounds, cornerSize);
                 }
 
                 g.setColour (button.getToggleState()
-                                 ? juce::Colours::white
-                                 : juce::Colours::white.withAlpha (0.7f));
+                                 ? baseColour
+                                 : baseColour.withAlpha (0.7f));
                 g.setFont (bounds.getHeight() * 0.6f);
                 g.drawText (button.getButtonText(), bounds, juce::Justification::centred);
 
                 if (shouldDrawButtonAsHighlighted)
                 {
-                    g.setColour (juce::Colours::lightgrey.withAlpha (0.2f));
+                    auto highlightColour = (currentStyle == Style::Light) 
+                        ? juce::Colours::lightgrey.withAlpha (0.2f)
+                        : juce::Colours::darkgrey.withAlpha (0.2f);
+                    g.setColour (highlightColour);
                     g.fillRoundedRectangle (bounds, cornerSize);
                 }
             }
+
+        private:
+            Style currentStyle = Style::Light;
         };
 
         class ComponentWrapper : public juce::Component
