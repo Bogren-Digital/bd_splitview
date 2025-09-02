@@ -145,6 +145,7 @@ namespace BogrenDigital
         };
 
         void resized() override;
+        void paintOverChildren (juce::Graphics& g) override;
         void mouseMove (const juce::MouseEvent& e) override;
         void updateChildBounds();
         void updateDividerBounds();

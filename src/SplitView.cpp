@@ -108,6 +108,57 @@ namespace BogrenDigital
         repaint();
     }
 
+    void SplitView::paintOverChildren (juce::Graphics& g)
+    {
+        if (currentMode != ViewMode::Split)
+        {
+            return;
+        }
+
+        const auto dividerBounds = divider.getBounds();
+        const auto centerX = dividerBounds.getCentreX();
+        const auto centerY = dividerBounds.getCentreY();
+
+        constexpr auto circleRadius = 16.0f;
+        const juce::Rectangle circleBounds(centerX - circleRadius,
+                                           centerY - circleRadius,
+                                           circleRadius * 2,
+                                           circleRadius * 2);
+
+        const auto currentStyle = divider.getStyle();
+        const auto bgColour = (currentStyle == Style::Light)
+                        ? juce::Colours::darkgrey.withAlpha(0.8f)
+                        : juce::Colours::lightgrey.withAlpha(0.8f);
+        const auto arrowColour = (currentStyle == Style::Light)
+                           ? juce::Colours::white
+                           : juce::Colours::black;
+
+        g.setColour(bgColour);
+        g.fillEllipse(circleBounds);
+
+        g.setColour(arrowColour);
+
+        constexpr auto arrowSize = 5.0f;
+        constexpr auto spacing = 6.0f;
+        constexpr auto lineThickness = 2.0f;
+        
+        juce::Path leftArrow;
+        leftArrow.startNewSubPath(centerX - spacing, centerY - arrowSize);
+        leftArrow.lineTo(centerX - spacing - arrowSize, centerY);
+        leftArrow.lineTo(centerX - spacing, centerY + arrowSize);
+        g.strokePath(leftArrow, juce::PathStrokeType(lineThickness, 
+                                                     juce::PathStrokeType::mitered,
+                                                     juce::PathStrokeType::rounded));
+        
+        juce::Path rightArrow;
+        rightArrow.startNewSubPath(centerX + spacing, centerY - arrowSize);
+        rightArrow.lineTo(centerX + spacing + arrowSize, centerY);
+        rightArrow.lineTo(centerX + spacing, centerY + arrowSize);
+        g.strokePath(rightArrow, juce::PathStrokeType(lineThickness, 
+                                                      juce::PathStrokeType::mitered,
+                                                      juce::PathStrokeType::rounded));
+    }
+
     void SplitView::setDividerPosition (float xPos)
     {
         dividerPosition = juce::jlimit (0.01f, 0.99f, xPos / static_cast<float> (getWidth()));
