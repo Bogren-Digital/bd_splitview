@@ -250,6 +250,12 @@ namespace BogrenDigital
             }
         };
 
+        const auto buttons = std::array { &showBothButton, &showLeftButton, &showRightButton };
+        for (auto i = 0; i < buttons.size(); ++i)
+        {
+            buttons[i]->setToggleState (static_cast<int>(newMode) == i, juce::dontSendNotification);
+        }
+
         // Reset all effects first
         if (leftWrapper)
             leftWrapper->setComponentEffect (nullptr);
