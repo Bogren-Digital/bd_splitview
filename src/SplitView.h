@@ -77,6 +77,7 @@ namespace BogrenDigital
             void mouseDrag (const juce::MouseEvent& e) override;
 
             void setStyle (Style style);
+            Style getStyle() const { return currentStyle; }
 
             static constexpr float width = 4.0f;
 
