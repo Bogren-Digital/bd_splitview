@@ -67,6 +67,12 @@ namespace BogrenDigital
          */
         void setDividerStyle (Style style);
 
+        /**
+         * @brief Sets the current view mode of the SplitView.
+         * @param newMode The new view mode to set (Split, A, or B).
+         */
+        void setViewMode (ViewMode newMode);
+
     private:
         class DividerComponent : public juce::Component
         {
@@ -149,7 +155,6 @@ namespace BogrenDigital
         void mouseMove (const juce::MouseEvent& e) override;
         void updateChildBounds();
         void updateDividerBounds();
-        void setViewMode (ViewMode newMode);
         void setDividerPosition (float xPos);
         float getDividerX() const;
 
